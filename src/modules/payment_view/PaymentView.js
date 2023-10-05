@@ -58,8 +58,8 @@ const PaymentView = () => {
                      }
                      >
                         <option className="payment_view__item_currency__selector__title" value="RUB">Рубли</option>
-                        <option className="payment_view__item_currency__selector__title"  value="USD">Доллары</option>
-                        <option className="payment_view__item_currency__selector__title"  value="EU">Евро</option>
+                        <option className="payment_view__item_currency__selector__title"  value="RUB">Рубли</option>
+                        <option className="payment_view__item_currency__selector__title"  value="RUB">Рубли</option>
                     </select>
                 </div>
                 <div className="payment_view__item_currency">
