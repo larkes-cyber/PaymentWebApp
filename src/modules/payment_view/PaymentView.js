@@ -1,16 +1,46 @@
 import React, { useCallback } from "react";
 import './payment_view.scss';
-import Service from "../../data/Service";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import UsePaymentRequest from "../../data/UsePaymentRequest";
+
+const usePaymentRequest = new UsePaymentRequest();
 
 
-const Remote = new Service();
+function checkOneDot(string){
+
+    var count = 0;
+
+    for(var char in string){
+        if(char == '.')count++;
+        if(count > 1) return false;
+    }
+
+    return true
+}
+
+
 
 const PaymentView = () => {
 
 
     const [curValue, setCurValue] = useState("");
-    const [curKind, setCurKind] = useState("");
+    const [curKind, setCurKind] = useState("RUB");
+    const [hasBeenDone, setHasBeenDone] = useState(false);
+    const [error, setError] = useState("");
+
+    useEffect(() => {
+        if(hasBeenDone){
+            usePaymentRequest.execute({
+                "currency":curValue,
+                "curKind":curKind
+            }).then(it => {
+                if(it == null){setError("Некорректная сумма!")}
+                else {window.location.href = it;}
+            })
+        }
+        setHasBeenDone(false);
+    },[hasBeenDone]);
+
 
     return(
         <div className="payment_view">
@@ -34,27 +64,26 @@ const PaymentView = () => {
                 </div>
                 <div className="payment_view__item_currency">
                    <div className="payment_view__item_currency__title">Введите сумму</div>
-                   <input value={curValue} onChange={
+                   <input
+                   placeholder = "100.00"
+                   value={curValue} 
+                   onChange={
                         (text) => {
                             setCurValue(text.target.value);
                         }
                    } className="payment_view__item_currency__value_form payment_view__item_currency__title" />
+                    {error.length != 0 ? 
+                        <div className="payment_view__error">
+                        {error}
+                        </div>
+                        : null
+                    }
                 </div>
             </div>
+            
+
             <button className="payment_view__button" onClick={ e => {
-                
-                Remote.paymentRequest({
-                    "amount": {
-                        "value": curValue,
-                        "currency": curKind
-                    },
-                    "confirmation": {
-                        "type": "redirect",
-                        "return_url": "http://localhost:3001/"
-                    },
-                    "capture": true,
-                    "description": "order 1"
-                }).then()
+                setHasBeenDone(true);
 
             }}>Продолжить</button>
         </div>
